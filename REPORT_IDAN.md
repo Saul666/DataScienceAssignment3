@@ -95,5 +95,13 @@ In production, I would monitor feature drift on critical delivery metrics like `
 
 ---
 
-## 5. Reflection
-What surprised you? When, in your mid-term project, would reaching for DL be the right call?
+## Reflection
+
+### What surprised you?
+What surprised me most was how significantly a lightweight, 321-parameter MLP outperformed classical ensemble models like Gradient Boosting on tabular data. Standard intuition often favors tree-based models for small tabular datasets, but proper optimization using `BCEWithLogitsLoss` and `Dropout(0.2)` allowed the neural network to nearly triple minority class recall (from 12.1% to 33.1%) while maintaining rapid 2-second convergence. Additionally, observing the extreme sensitivity of training stability to learning rate—where shifting by a factor of 10 caused total instability (`1e-1`) or underfitting (`1e-5`)—highlighted just how crucial hyperparameter selection is for deep learning.
+
+### When, in your pair trading mid-term project, would reaching for DL be the right call?
+Reaching for Deep Learning in pair trading is justified when traditional linear assumptions (such as static linear cointegration via the Engle-Granger test) break down due to market non-linearities and regime shifts. DL becomes the right call when:
+1. **High-Dimensional / Alternative Data Integration:** Modeling complex, non-linear relationships across hundreds of candidate pairs simultaneously while incorporating order book depth (LOB), sentiment scores, and macroeconomic time series.
+2. **Dynamic Spread & Regime Modeling:** Using sequence architectures (like LSTMs, TCNs, or Temporal Fusion Transformers) to predict time-varying mean-reversion speed, dynamic hedge ratios, and structural breaks in time-series spreads.
+3. **Execution & Position Sizing:** Applying Deep Reinforcement Learning (DRL) to dynamically optimize entry/exit thresholds, trade execution timing, and position sizing while accounting for transaction costs and market impact.

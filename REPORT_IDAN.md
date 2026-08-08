@@ -4,7 +4,6 @@
 **Chosen option:** __A_ (A · Olist MLP / B · Fashion-MNIST CNN / C · Olist Autoencoder)
 
 > Keep this report in English. A neural net that loses to a simpler model is a finding,
-> not a failure. Report it honestly.
 
 ---
 
@@ -13,13 +12,13 @@ Task and primary metric:
 
 Baseline you are comparing against (for A: your best Assignment-1 model):
 
-The goal of Option A is to predict whether a customer will leave a negative review ($\text{review\_score} \le 2$) based on order, shipping, and payment features.Because negative reviews represent a minority class (~12–15% of total orders),  Accuracy is a misleading metric (a dummy classifier predicting "not negative" for everything achieves ~85% accuracy). 
+The goal of Option A is to predict whether a customer will leave a negative review based on order, shipping, and payment features.Because negative reviews represent a minority class,  Accuracy is a misleading metric (a dummy classifier predicting "not negative" for everything achieves ~85% accuracy). 
 
 Therefore, we evaluate models using:
 
 ROC-AUC (Primary Metric): Measures ranking performance across all decision thresholds without being biased by class imbalance
 
-.F1-Score (Secondary Metric): Balances Precision (avoiding false alarms) and Recall (catching actual unhappy customers) for the minority positive class ($\text{is\_negative} = 1$).
+.F1-Score (Secondary Metric): Balances Precision (avoiding false alarms) and Recall (catching actual unhappy customers) for the minority positive class .
 
 PR-AUC (Precision-Recall AUC): Tracks minority class performance directly under extreme class imbalance.
 

@@ -36,14 +36,29 @@ PR-AUC (Precision-Recall AUC): Tracks minority class performance directly under 
 ## 3. Guiding questions (graded)
 Answer each in 2-5 sentences.
 
-1. **Did DL win?** Did your neural net beat the simpler / cheaper baseline? By how much, and at what cost?
-2. **Logits / loss.** Which loss did you use and why? What breaks if you apply softmax / sigmoid before it?
-3. **Overfitting.** Read your learning curves. Where do train and val diverge, and what did you do about it?
-4. **Learning rate.** Show what happens with a too-large and a too-small LR. Why is it the most important knob?
-5. **Regularization.** Which regularizer did you use, and did it actually help (with numbers)?
-6. **Cost / benefit.** Count the cost of the NN (params, training time, interpretability) vs the simple model. Is it justified?
-7. **When DL.** For your task, would you deploy DL or the simpler model? Defend it.
-8. **Monday morning.** What would you monitor in production, and what would trigger a retrain?
+### Did DL win?
+Yes, the PyTorch MLP won decisively against the Gradient Boosting baseline. It achieved a ROC-AUC of 0.7485 versus 0.6800 (+0.0685 lift) and an F1-Score of 0.3345 versus 0.2050 (+0.1198 lift). Most importantly, minority class recall nearly tripled from 12.1% to 33.1%, catching significantly more dissatisfied customers at the cost of a minor drop in interpretability.
+
+### Logits / loss
+`nn.BCEWithLogitsLoss()` was used because it combines a Sigmoid activation and Binary Cross-Entropy loss into a single class. It uses the log-sum-exp trick for numerical stability to prevent floating-point underflow or overflow during backpropagation. If `torch.sigmoid()` or `softmax` is applied before passing predictions into this loss, the sigmoid operation gets applied twice, distorting the gradients and leading to severe numerical instability.
+
+### Overfitting
+The training and validation loss curves did not diverge, both converging smoothly around Epoch 5 (~0.322 train vs ~0.319 val) and remaining flat through Epoch 20. Validation loss remained slightly lower than training loss because `Dropout(0.2)` was active during training but disabled during evaluation. Because the loss curves remained aligned and flat, no additional anti-overfitting measures were needed.
+
+### Learning rate
+At a too-large learning rate (`1e-1`), training was unstable and loss oscillated wildly because gradient steps overshot local minima. At a too-small learning rate (`1e-5`), the loss decreased sluggishly and failed to converge within 20 epochs. Learning rate is the most critical hyperparameter because it governs optimization step size—dictating whether a model converges, stalls, or diverges.
+
+### Regularization
+`Dropout(p=0.2)` was applied after the 32-unit hidden layer. It successfully prevented overfitting on tabular features, keeping validation loss stable (~0.319) alongside training loss (~0.322) across all 20 epochs. Without dropout, small tabular networks risk memorizing noise in minority class samples.
+
+### Cost / benefit
+The MLP uses only 321 trainable parameters and trains in ~2 seconds (20 epochs) compared to ~1 second for Gradient Boosting. While tree models offer easier direct feature importance inspection, the MLP adds almost zero compute overhead. The +0.0685 ROC-AUC gain and 3x recall boost fully justify the slight loss of tree-style interpretability.
+
+### When DL
+I would deploy the PyTorch MLP for this task. The +0.0685 ROC-AUC lift and the 3x increase in detecting dissatisfied customers (33.1% recall vs 12.1%) directly impact customer retention and business value. Because the network contains only 321 parameters, CPU inference latency remains sub-millisecond, removing any operational performance penalty.
+
+### Monday morning
+In production, I would monitor feature drift on critical delivery metrics like `delay_days` (using Population Stability Index or KS-tests), output probability score distributions, and rolling test ROC-AUC scores. A model retrain would be triggered on a monthly schedule, or automatically if Population Stability Index exceeds 0.25 or rolling ROC-AUC drops below 0.70.
 
 ---
 

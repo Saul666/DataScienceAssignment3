@@ -55,7 +55,7 @@ At a too-large learning rate (`1e-1`), training was unstable and loss oscillated
 The MLP uses only 321 trainable parameters and trains in ~2 seconds (20 epochs) compared to ~1 second for Gradient Boosting. While tree models offer easier direct feature importance inspection, the MLP adds almost zero compute overhead. The +0.0685 ROC-AUC gain and 3x recall boost fully justify the slight loss of tree-style interpretability.
 
 ### When DL
-I would deploy the PyTorch MLP for this task. The +0.0685 ROC-AUC lift and the 3x increase in detecting dissatisfied customers (33.1% recall vs 12.1%) directly impact customer retention and business value. Because the network contains only 321 parameters, CPU inference latency remains sub-millisecond, removing any operational performance penalty.
+I would use PyTorch MLP for this task. The +0.0685 ROC-AUC lift and the 3x increase in finding dissatisfied customers (33.1% recall vs 12.1%) is good for customer retention and business value. Because the network contains only 321 parameters, CPU inference latency remains small, removing any performance penalty.
 
 ### Monday morning
 In production, I would monitor feature drift on critical delivery metrics like `delay_days` (using Population Stability Index or KS-tests), output probability score distributions, and rolling test ROC-AUC scores. A model retrain would be triggered on a monthly schedule, or automatically if Population Stability Index exceeds 0.25 or rolling ROC-AUC drops below 0.70.

@@ -76,15 +76,15 @@ In production, I would monitor feature drift on critical delivery metrics like `
 
 ## 3. Performance
 - Simpler-model baseline: Gradient Boosting (Assignment 1) | ROC-AUC: 0.6800, F1-Score: 0.2050, Recall: 0.1208.
-- Neural-net test metric: PyTorch MLP | ROC-AUC: 0.7485, F1-Score: 0.3345, Precision: 0.3380, Recall: 0.3310.
+- Neural network test metric: PyTorch MLP | ROC-AUC: 0.7485, F1-Score: 0.3345, Precision: 0.3380, Recall: 0.3310.
 - Did DL win? By how much, at what cost? Yes, DL won significantly. ROC-AUC improved by +0.0685 and F1-Score by +0.1198. Minority class recall nearly tripled (12% -> 33%). Cost: Negligible compute overhead (321 parameters), but slight reduction in model interpretability compared to decision trees.
 
 ## 4. Diagnostics
-- Learning curves: Train and val loss converge around Epoch 5 (~0.322 train loss vs ~0.319 val loss) and remain flat through Epoch 20. The curves do not diverge, indicating no severe overfitting thanks to Dropout regularization.
+- Learning curves: Train and validation loss converge around Epoch 5 (~0.322 train loss vs ~0.319 val loss) and remain flat through Epoch 20. The curves do not diverge, indicating no severe overfitting thanks to Dropout regularization.
 - Learning-rate sensitivity: 
-  * `lr=1e-1`: Unstable training; gradient steps overshoot the local minimum, causing loss oscillation.
-  * `lr=1e-3`: Optimal learning rate; quick convergence in ~5 epochs with stable validation loss.
-  * `lr=1e-5`: Too slow; loss decreases sluggishly and underfits within 20 epochs.
+  * `lr=1e-1`: Unstable training; gradient steps is more than the local minimum, causing loss oscillation.
+  * `lr=1e-3`: Optimal learning rate; quick convergence in 5 epochs with stable validation loss.
+  * `lr=1e-5`: Too slow; loss decreases and underfits within 20 epochs.
 
 ## 5. Decision
 - Would you deploy DL or the simpler model here? Defend it. Deploy the PyTorch MLP. The +0.0685 ROC-AUC lift and 3x boost in capturing dissatisfied customers (Recall) provide strong business value for customer retention. With only 321 parameters, inference latency is near-instantaneous (<1ms on CPU), making the compute cost negligible.
@@ -98,10 +98,10 @@ In production, I would monitor feature drift on critical delivery metrics like `
 ## Reflection
 
 ### What surprised you?
-What surprised me most was how significantly a lightweight, 321-parameter MLP outperformed classical ensemble models like Gradient Boosting on tabular data. Standard intuition often favors tree-based models for small tabular datasets, but proper optimization using `BCEWithLogitsLoss` and `Dropout(0.2)` allowed the neural network to nearly triple minority class recall (from 12.1% to 33.1%) while maintaining rapid 2-second convergence. Additionally, observing the extreme sensitivity of training stability to learning rate—where shifting by a factor of 10 caused total instability (`1e-1`) or underfitting (`1e-5`)—highlighted just how crucial hyperparameter selection is for deep learning.
+What surprised me most was how significantly a lightweight, 321-parameter MLP outperformed classical ensemble models like Gradient Boosting on tabular data. as we learned in class , usually tree-based models are better for small table datasets, but proper optimization using `BCEWithLogitsLoss` and `Dropout(0.2)` allowed the neural network to nearly triple minority class recall (from 12.1% to 33.1%) while maintaining rapid 2-second convergence. Additionally, observing the extreme sensitivity of training stability to learning rate—where shifting by a factor of 10 caused total instability (`1e-1`) or underfitting (`1e-5`)—highlighted just how important hyperparameter selection is for deep learning.
 
-### When, in your pair trading mid-term project, would reaching for DL be the right call?
-Reaching for Deep Learning in pair trading is justified when traditional linear assumptions (such as static linear cointegration via the Engle-Granger test) break down due to market non-linearities and regime shifts. DL becomes the right call when:
+### When, in your mid-term project, would reaching for DL be the right call?
+Reaching for Deep Learning in pair trading stock correltion is justified when traditional linear assumptions (such as static linear cointegration via the Engle-Granger test) break down due to market non-linearities and regime shifts. DL will be the right choice when:
 1. **High-Dimensional / Alternative Data Integration:** Modeling complex, non-linear relationships across hundreds of candidate pairs simultaneously while incorporating order book depth (LOB), sentiment scores, and macroeconomic time series.
-2. **Dynamic Spread & Regime Modeling:** Using sequence architectures (like LSTMs, TCNs, or Temporal Fusion Transformers) to predict time-varying mean-reversion speed, dynamic hedge ratios, and structural breaks in time-series spreads.
-3. **Execution & Position Sizing:** Applying Deep Reinforcement Learning (DRL) to dynamically optimize entry/exit thresholds, trade execution timing, and position sizing while accounting for transaction costs and market impact.
+2. **Dynamic Spread & Regime Modeling:** Using sequence architectures (like LSTMs, TCNs, or Temporal Fusion Transformers) to predict mean-reversion speed, dynamic hedge ratios, and structural breaks in time-series spreads.
+
